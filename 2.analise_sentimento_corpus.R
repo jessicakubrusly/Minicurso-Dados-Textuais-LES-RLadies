@@ -25,6 +25,8 @@ contagem_tokens = livros_tokens |>
   arrange(desc(n)) |> 
   unique()
 
+contagem_tokens
+
 #######################################
 ### Palavras mais comuns em todo corpus
 #######################################
@@ -104,6 +106,7 @@ contagem_positivos =
   filter(polaridade == 1) |> 
   select(-polaridade) |> 
   arrange(desc(n))
+
 contagem_negativos = 
   contagem_tokens_com_polaridade |> 
   filter(polaridade == -1) |> 
