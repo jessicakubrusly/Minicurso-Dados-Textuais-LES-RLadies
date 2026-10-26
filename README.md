@@ -6,25 +6,16 @@ Este minicurso apresenta conceitos e técnicas introdutórias para a análise de
 
 ## Programa
 
-Introdução à análise de textos: aplicações, processamento de linguagem natural, mineração de textos e conceitos de documentos, corpus e tokens.
-
-Apresentação e exploração inicial da base de textos no R.
-
-Pré-processamento de textos: tokenização, padronização, tratamento de pontuação e caracteres especiais, remoção de stopwords e noções de lematização.
-
-Análise exploratória: frequência de palavras, visualização dos termos mais frequentes e bigramas.
-
-Introdução à análise de sentimentos: polaridade, unidades de análise e principais abordagens.
-
-Análise de sentimentos baseada em léxicos: construção de escores, visualização e interpretação dos resultados.
-
-Vetorização de textos com Bag of Words: representação por presença ou frequência de termos e matriz termo-documento.
-
-Vetorização de textos com TF-IDF: ponderação dos termos e comparação com contagens simples.
-
-Vetorização de textos com Doc2Vec: conceitos básicos, representação vetorial de documentos e similaridade entre textos.
-
-Comparação das representações e possibilidades de aplicação em similaridade, agrupamento e classificação de textos.
+1. Introdução à análise de textos: aplicações, processamento de linguagem natural, mineração de textos e conceitos de documentos, corpus e tokens.
+2. Apresentação e exploração inicial da base de textos no R.
+3. Pré-processamento de textos: tokenização, padronização, tratamento de pontuação e caracteres especiais, remoção de stopwords e noções de lematização.
+4. Análise exploratória.
+5. Introdução à análise de sentimentos: polaridade, unidades de análise e principais abordagens.
+6. Análise de sentimentos baseada em léxicos: construção de escores, visualização e interpretação dos resultados.
+7. Vetorização de textos com Bag of Words: representação por presença ou frequência de termos e matriz termo-documento.
+8. Vetorização de textos com TF-IDF: ponderação dos termos e comparação com contagens simples.
+9. Vetorização de textos com Doc2Vec: conceitos básicos, representação vetorial de documentos e similaridade entre textos.
+10. Comparação das representações e possibilidades de aplicação em similaridade, agrupamento e classificação de textos.
 
 ## Material
 Slide
