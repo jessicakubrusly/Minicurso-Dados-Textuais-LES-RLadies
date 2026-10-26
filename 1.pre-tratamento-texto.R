@@ -5,12 +5,16 @@ livros = readRDS("livros.RDS")
 
 dim(livros)
 glimpse(livros)
+livros
 
-vazios = which(livros$texto == "")
-vazios
-
+#carregar base
 x = livros$texto
-i = 233
+
+#texto usado para exemplo
+tamanho = nchar(livros$texto)
+max(tamanho)
+indices = which(tamanho > 2000)
+i = 10
 x[i]
 
 #transforar tudo em minísculo
@@ -37,12 +41,13 @@ x[i]
 
 #carrega uma lista de stop words
 stop_words_pt = readRDS("stop_words_pt.rds")
+stop_words_pt = c(stop_words_pt,"não")
+
 #carregar o pacote e arquivo responsavel pela lematizacao
 library(udpipe)
 #modelo_pt = udpipe_download_model(language = "portuguese")
+
 ud_model = udpipe_load_model("portuguese-bosque-ud-2.5-191206.udpipe")
-
-
 
 #para cada posicao de x queremos fazer o seguinte:
 # - tirar stop words
@@ -53,24 +58,26 @@ ud_model = udpipe_load_model("portuguese-bosque-ud-2.5-191206.udpipe")
 library(stringr)
 
 #1) separar o paragrafo em palavras
-paragrafo = x[[i]]
+paragrafo = x[i]
 (palavras = str_split(paragrafo, "\\s+"))
 palavras = palavras[[1]]
+
 #2) identificar e retirar as stop words
 indices_stop = palavras %in% stop_words_pt
 indices_stop
-length(indices_stop)
-length(palavras)
 palavras_sem_stop <- palavras[!indices_stop]
+
 #3)criar tabela de lema e trocar palavra pro lema
 tabela_lemma = udpipe::udpipe_annotate(ud_model, x = palavras_sem_stop) |> 
   as.data.frame() |> select(token, lemma) |> rename(palavras = token)
 head(tabela_lemma)
 palavras_sem_stop
 palavras_sem_stop_lemma = tabela_lemma$lemma
+
 #4) identificar e retirar as stop words, novamente
 indices_stop = palavras_sem_stop_lemma %in% stop_words_pt
 palavras_sem_stop_lemma_sem_stop <- palavras_sem_stop_lemma[!indices_stop]
+
 #5) juntar tudo em um paragrafo novamente
 paragrafo_sem_stop_lemma_sem_stop = paste(palavras_sem_stop_lemma_sem_stop,collapse = " ")
 
