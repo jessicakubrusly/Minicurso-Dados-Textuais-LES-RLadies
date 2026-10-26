@@ -5,9 +5,20 @@ library(tidytext)
 livros = readRDS("livros_fim_pre_tratamento.RDS")
 glimpse(livros)
 
-livros_tokens = livros |> select(id,autor,livro,texto) |> unnest_tokens(token, texto)
+
+#escolha do livro
+unique(livros$livro)
+l =  unique(livros$livro)[4]
+l
+
+livros_tokens = livros |> 
+  filter(livro == l) |>
+  select(id,cap,texto) |> 
+  unnest_tokens(token, texto)
 livros_tokens = tibble(livros_tokens)
 livros_tokens
+
+table(livros_tokens$cap)
 
 ###########################
 ### Contagem palavras
@@ -17,13 +28,8 @@ livros_tokens
 
 livros_tokens = livros_tokens |> filter(token != "não")
 
-#escolha do livro
-unique(livros_tokens$livro)
-l =  unique(livros_tokens$livro)[4]
-l
 
 contagem_tokens = livros_tokens |> 
-  filter(livro==l) |> 
   select(token) |>
   group_by(token) |> 
   mutate(n = n()) |>  
@@ -31,16 +37,19 @@ contagem_tokens = livros_tokens |>
   arrange(desc(n)) |> 
   unique()
 
+contagem_tokens
+
 #######################################
 ### Palavras mais comuns em todo corpus
 #######################################
 
-top = 10
+top = 20
 
 barplot(rev(contagem_tokens$n[1:top]),
         horiz = T,
         names.arg = rev(contagem_tokens$token[1:top]), 
         las=1,
+        cex.names=0.8,
         main=paste("Contagem de Tokens no Corpus - ",l))
 
 ########################
@@ -54,6 +63,7 @@ wordcloud(words = contagem_tokens$token,
           scale = c(3,0.3),
           freq = contagem_tokens$n,
           max.words = 100,
+          random.order = F,
           colors = brewer.pal(6,"Dark2"),
           rot.per = 0.2)
 
@@ -85,7 +95,8 @@ dim(token_polaridade)
 length(token_polaridade$token)
 length(unique(token_polaridade$token))
 
-token_polaridade |> group_by(token) |> 
+token_polaridade |> 
+  group_by(token) |> 
   mutate(rep = n()) |> 
   ungroup() |> 
   arrange(token) |>
@@ -98,9 +109,10 @@ token_polaridade = token_polaridade[-6944,]
 
 glimpse(token_polaridade)
 glimpse(contagem_tokens)
+
 contagem_tokens_com_polaridade = 
   contagem_tokens |> left_join(token_polaridade)
-
+contagem_tokens_com_polaridade[20:30,]
 
 ################################################
 ### Palavras mais comuns: positivas x negativas
@@ -111,6 +123,7 @@ contagem_positivos =
   filter(polaridade == 1) |> 
   select(-polaridade) |> 
   arrange(desc(n))
+
 contagem_negativos = 
   contagem_tokens_com_polaridade |> 
   filter(polaridade == -1) |> 
@@ -150,8 +163,6 @@ mtext(paste("Termos mais frequentes - positivo x negativo - ",l),
 ### Nuvens de palavras: positivas x negativas
 ################################################
 
-library(wordcloud)
-
 wordcloud(words = contagem_positivos$token,
           scale = c(3,0.3),
           freq = contagem_positivos$n,
@@ -179,8 +190,7 @@ wordcloud(words = contagem_negativos$token,
 
 partes = 100
 
-narrativa = livros_tokens |> 
-  filter(livro == l)  |> 
+narrativa = livros_tokens |>
   select(token) |> 
   inner_join(token_polaridade)
 
@@ -195,36 +205,29 @@ sintimento_narrativa = narrativa |>
   select(parte,senti) |> 
   unique()
 
+par(mfrow = c(1, 1))
+
 barplot(
   sintimento_narrativa$senti,
   ylab = "sentimento",
   xlab = "narrativa",
   main=l)
 
-polaridade = 
-  livros_tokens |> 
-  filter(livro == l)  |> 
-  select(token) |> 
-  inner_join(token_polaridade) |> 
-  select(token, polaridade)
 
-N = nrow(polaridade)
-k = (N/partes) %/% 1
+## ao longo dos capitulos
 
-sentimentos <- polaridade |> 
-  mutate(parte = row_number() %/% k) |> 
-  group_by(parte) |> 
+sentimentos_cap = 
+  livros_tokens |>
+  select(token,cap) |> 
+  inner_join(token_polaridade) |>
+  group_by(cap) |> 
   mutate(senti = sum(polaridade)/k) |> 
-  select(parte,senti) |> 
+  ungroup() |>
+  select(cap,senti) |> 
   unique()
 
-par(mfrow = c(1, 1))
-
 barplot(
-  sentimentos$senti[1:partes],
+  sentimentos_cap$senti,
   ylab = "sentimento",
-  xlab = "narrativa",
-  main=paste("Sentimento ao longo da narrativa -",l))
-
-
-
+  xlab = "capítulos",
+  main=l)
